@@ -8,7 +8,7 @@ set -euo pipefail
 DOMAIN="python-community.com"
 API_SUBDOMAIN="api.${DOMAIN}"
 MLFLOW_SUBDOMAIN="mlflow.${DOMAIN}"
-APP_DIR="/opt/sonar-classifier"
+APP_DIR="$HOME/sonar-classifier"
 REPO_URL="${REPO_URL:-}"
 
 echo "══════════════════════════════════════════════════"

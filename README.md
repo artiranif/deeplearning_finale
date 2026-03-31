@@ -135,8 +135,8 @@ Dans **Settings → Secrets and variables → Actions** du repo :
 
 ```bash
 # Sur le VPS
-git clone https://github.com/artiranif/deeplearning_finale.git /opt/sonar-classifier
-cd /opt/sonar-classifier
+git clone https://github.com/artiranif/deeplearning_finale.git ~/sonar-classifier
+cd ~/sonar-classifier
 
 # Obtenir les certificats SSL
 chmod +x deploy/deploy.sh

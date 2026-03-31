@@ -74,16 +74,6 @@ jobs:
         with:
           name: docker-image
 
-      - name: Prepare VPS directory
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_SSH_KEY }}
-          script: |
-            sudo mkdir -p /opt/sonar-classifier
-            sudo chown $USER:$USER /opt/sonar-classifier
-
       - name: Copy files to VPS
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -91,7 +81,7 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           source: "image.tar.gz,docker-compose.yml,deploy/"
-          target: /opt/sonar-classifier/
+          target: ~/sonar-classifier
 
       - name: Deploy on VPS
         uses: appleboy/ssh-action@v1.0.3
@@ -100,7 +90,7 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
-            cd /opt/sonar-classifier
+            cd ~/sonar-classifier
 
             # Charger la nouvelle image
             docker load < image.tar.gz
