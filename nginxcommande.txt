@@ -1,0 +1,52 @@
+# Configuration Nginx reverse proxy HTTP+HTTPS pour Sonar API et MLflow
+
+# HTTP reverse proxy only (SSL sera ajouté automatiquement par certbot --nginx)
+server {
+    listen 80;
+    server_name api.python-community.com;
+
+    location / {
+        proxy_pass http://127.0.0.1:8000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+
+server {
+    listen 80;
+    server_name mlflow.python-community.com;
+
+    location / {
+        proxy_pass http://127.0.0.1:5000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+
+# Après avoir activé ce fichier, lancez certbot --nginx pour que la configuration HTTPS soit ajoutée automatiquement.
+
+# Pour activer :
+# cp nginxcommande.txt /etc/nginx/sites-available/sonar
+# ln -s /etc/nginx/sites-available/sonar /etc/nginx/sites-enabled/
+# nginx -t
+# systemctl reload nginx
+
+# --- Configuration Certbot (Let's Encrypt) ---
+# 1. Installer certbot et le plugin nginx :
+#    sudo apt update && sudo apt install certbot python3-certbot-nginx
+#
+# 2. Obtenir les certificats SSL pour vos domaines :
+#    sudo certbot --nginx -d api.python-community.com -d mlflow.python-community.com
+#
+#    OU, si vous préférez la méthode webroot (optionnelle) :
+#    sudo certbot certonly --webroot -w /var/www/certbot -d api.python-community.com -d mlflow.python-community.com
+#
+# 3. Vérifier le renouvellement automatique :
+#    sudo certbot renew --dry-run
+#
+# 4. Après obtention des certificats, recharger Nginx :
+#    sudo systemctl reload nginx
