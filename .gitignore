@@ -54,7 +54,6 @@ report.html
 tmp_report_test.html
 
 # Data files (tracked by DVC)
-data/sonar_data.csv
 data/data_gen.json
 
 # OS
