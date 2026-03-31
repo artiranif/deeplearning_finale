@@ -1,0 +1,17 @@
+# docker-compose.init-ssl.yml
+# Nginx temporaire pour obtenir les certificats SSL initiaux
+version: "3.8"
+
+services:
+  nginx-init:
+    image: nginx:alpine
+    container_name: sonar-nginx-init
+    ports:
+      - "80:80"
+    volumes:
+      - ./deploy/nginx/nginx-init.conf:/etc/nginx/nginx.conf:ro
+      - certbot-data:/var/www/certbot
+
+volumes:
+  certbot-data:
+  certbot-certs:

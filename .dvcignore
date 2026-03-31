@@ -1,0 +1,8 @@
+# Add patterns of files DVC should ignore
+# (similar to .gitignore)
+.git
+.gitignore
+__pycache__
+.venv
+mlruns
+ui

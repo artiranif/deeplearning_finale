@@ -1,0 +1,2 @@
+# Ce dossier contient les artefacts model.pkl et scaler.pkl
+# Ils sont générés par src/train.py et versionnés par DVC

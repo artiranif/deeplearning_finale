@@ -1,0 +1,82 @@
+version: "3.8"
+
+services:
+  # ── API FastAPI ────────────────────────────────────────────
+  api:
+    build: .
+    container_name: sonar-api
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - ALLOWED_ORIGINS=https://python-community.com,https://api.python-community.com,http://localhost:3000
+    volumes:
+      - model-data:/app/models
+      - ./data:/app/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - sonar-net
+
+  # ── MLflow Tracking Server ────────────────────────────────
+  mlflow:
+    build: .
+    container_name: sonar-mlflow
+    restart: unless-stopped
+    command: >
+      mlflow server
+      --backend-store-uri sqlite:///mlflow.db
+      --default-artifact-root /app/mlruns
+      --host 0.0.0.0
+      --port 5000
+    ports:
+      - "5000:5000"
+    volumes:
+      - mlflow-data:/app/mlruns
+      - mlflow-db:/app
+    networks:
+      - sonar-net
+
+  # ── Nginx Reverse Proxy ──────────────────────────────────
+  nginx:
+    image: nginx:alpine
+    container_name: sonar-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./deploy/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./deploy/nginx/ssl:/etc/nginx/ssl:ro
+      - certbot-data:/var/www/certbot:ro
+      - certbot-certs:/etc/letsencrypt:ro
+    depends_on:
+      - api
+      - mlflow
+    networks:
+      - sonar-net
+
+  # ── Certbot (Let's Encrypt SSL) ──────────────────────────
+  certbot:
+    image: certbot/certbot
+    container_name: sonar-certbot
+    volumes:
+      - certbot-data:/var/www/certbot
+      - certbot-certs:/etc/letsencrypt
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    networks:
+      - sonar-net
+
+volumes:
+  model-data:
+  mlflow-data:
+  mlflow-db:
+  certbot-data:
+  certbot-certs:
+
+networks:
+  sonar-net:
+    driver: bridge

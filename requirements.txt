@@ -1,0 +1,17 @@
+fastapi
+uvicorn
+pydantic
+scikit-learn
+pandas
+numpy
+joblib
+scipy
+mlflow
+dvc
+evidently
+pytest
+httpx
+python-dotenv
+PyYAML
+shap
+python-multipart
