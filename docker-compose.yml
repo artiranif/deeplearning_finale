@@ -27,6 +27,8 @@ services:
       --default-artifact-root /app/mlruns
       --host 0.0.0.0
       --port 5000
+    environment:
+      - MLFLOW_ALLOW_ALL_HOSTS=true
     ports:
       - "5000:5000"
     volumes:
